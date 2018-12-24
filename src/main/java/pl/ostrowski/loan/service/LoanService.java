@@ -7,6 +7,8 @@ import pl.ostrowski.loan.repository.LoanRepository;
 
 import java.math.BigDecimal;
 
+import static pl.ostrowski.loan.domain.LoanConstraints.PRINCIPAL;
+
 @Service
 public class LoanService {
 
@@ -18,8 +20,11 @@ public class LoanService {
     }
 
     public Long saveLoan(Loan loan) {
-        loan.setDueAmount(loan.getAmount().multiply(BigDecimal.valueOf(1.1)));
         Loan insertedLoan = loanRepository.save(loan);
         return insertedLoan.getId();
+    }
+
+    public void calculateDueAmount(Loan loan) {
+        loan.setDueAmount(loan.getAmount().multiply(BigDecimal.valueOf(1 + PRINCIPAL)));
     }
 }

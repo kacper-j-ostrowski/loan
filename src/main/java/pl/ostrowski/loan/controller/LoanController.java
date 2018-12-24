@@ -38,9 +38,10 @@ public class LoanController {
             logger.info("Loan rejected because {}", validationResult.get());
             return ResponseEntity.ok(new LoanRejectedRepsoneDto(validationResult.get()));
         }
+        loanService.calculateDueAmount(loan);
         Long loanId = loanService.saveLoan(loan);
         logger.info("Loan accepted with new Id {}", loanId);
-        return ResponseEntity.ok(new LoanAcceptedRepsoneDto(loan.getId(), loan.getDueDate(), loan.getAmount()));
+        return ResponseEntity.ok(new LoanAcceptedRepsoneDto(loan.getId(), loan.getDueDate(), loan.getDueAmount()));
     }
 
 
