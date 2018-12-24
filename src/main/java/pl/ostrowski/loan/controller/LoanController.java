@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ostrowski.loan.domain.Loan;
-import pl.ostrowski.loan.dto.LoanAcceptedRepsoneDto;
-import pl.ostrowski.loan.dto.LoanRepsoneDto;
-import pl.ostrowski.loan.dto.LoanRejectedRepsoneDto;
+import pl.ostrowski.loan.dto.LoanResponseDto;
+import pl.ostrowski.loan.dto.LoanRejectedResponseDto;
+import pl.ostrowski.loan.dto.mapper.LoanToLoanDtoResponseMapper;
 import pl.ostrowski.loan.service.LoanService;
 import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
 
@@ -32,21 +32,23 @@ public class LoanController {
 
     @PostMapping("/loan")
     @Transactional
-    public ResponseEntity<LoanRepsoneDto> applyForLoan(@RequestBody Loan loan) {
+    public ResponseEntity<LoanResponseDto> applyForLoan(@RequestBody Loan loan) {
         Optional<String> validationResult = LoanValidator.validate(loan);
         if(validationResult.isPresent()) {
             logger.info("Loan rejected because {}", validationResult.get());
-            return ResponseEntity.ok(new LoanRejectedRepsoneDto(validationResult.get()));
+            return ResponseEntity.ok(new LoanRejectedResponseDto(validationResult.get()));
         }
-        loanService.calculateDueAmount(loan);
+        loanService.calculateDueAmountForLoan(loan);
         Long loanId = loanService.saveLoan(loan);
         logger.info("Loan accepted with new Id {}", loanId);
-        return ResponseEntity.ok(new LoanAcceptedRepsoneDto(loan.getId(), loan.getDueDate(), loan.getDueAmount()));
+        return ResponseEntity.ok(LoanToLoanDtoResponseMapper.mapToAcceptedResponse(loan));
     }
 
 
     @PutMapping("/loan")
-    public String extendLoan(Long id) {
+    public String extendLoan(Long loanId) {
+        logger.info("Requested extension for Loan with id: {}", loanId);
+
         return "extended";
     }
 

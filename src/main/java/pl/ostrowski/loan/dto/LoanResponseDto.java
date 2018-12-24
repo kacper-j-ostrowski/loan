@@ -1,6 +1,6 @@
 package pl.ostrowski.loan.dto;
 
-public interface LoanRepsoneDto {
+public interface LoanResponseDto {
     static String ACCEPTED = "Accepted";
     static String REJECTED = "Rejected";
     String getStatusOfLoan();

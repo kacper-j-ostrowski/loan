@@ -1,9 +1,12 @@
 package pl.ostrowski.loan.dto;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class LoanAcceptedRepsoneDto implements LoanRepsoneDto {
+@Builder
+public class LoanAcceptedResponseDto implements LoanResponseDto {
 
     private Long loanId;
 
@@ -11,15 +14,18 @@ public class LoanAcceptedRepsoneDto implements LoanRepsoneDto {
 
     private BigDecimal dueAmount;
 
-    public LoanAcceptedRepsoneDto(Long loanId, Date dueDate, BigDecimal dueAmount) {
+    private BigDecimal principal;
+
+    public LoanAcceptedResponseDto(Long loanId, Date dueDate, BigDecimal dueAmount, BigDecimal principal) {
         this.loanId = loanId;
         this.dueDate = dueDate;
         this.dueAmount = dueAmount;
+        this.principal = principal;
     }
 
     @Override
     public String getStatusOfLoan() {
-        return LoanRepsoneDto.ACCEPTED;
+        return LoanResponseDto.ACCEPTED;
     }
 
     public Long getLoanId() {
@@ -32,5 +38,9 @@ public class LoanAcceptedRepsoneDto implements LoanRepsoneDto {
 
     public BigDecimal getDueAmount() {
         return dueAmount;
+    }
+
+    public BigDecimal getPrincipal() {
+        return principal;
     }
 }
