@@ -1,7 +1,6 @@
 package pl.ostrowski.loan.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,11 @@ import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
 
 import java.util.Optional;
 
+@Log4j2
 @Transactional
 @RestController
+@RequestMapping("/api/v1")
 public class LoanController {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoanController.class);
 
     private LoanService loanService;
 
@@ -32,25 +31,25 @@ public class LoanController {
     public ResponseEntity<LoanResponseDto> applyForLoan(@RequestBody Loan loan) {
         Optional<String> validationResult = LoanValidator.validate(loan);
         if(validationResult.isPresent()) {
-            logger.info("Loan rejected because {}", validationResult.get());
+            log.info("Loan rejected because {}", validationResult.get());
             return ResponseEntity.ok(new LoanRejectedResponseDto(validationResult.get()));
         }
         loanService.calculateDueAmountForLoan(loan);
         Long loanId = loanService.saveLoan(loan);
-        logger.info("Loan accepted with new Id {}", loanId);
+        log.info("Loan accepted with new Id {}", loanId);
         return ResponseEntity.ok(LoanToLoanDtoResponseMapper.mapToAcceptedResponse(loan));
     }
 
 
     @PutMapping("/loan/{loanId}")
     public ResponseEntity extendLoan(@PathVariable Long loanId) {
-        logger.info("Requested extension for Loan with id: {}", loanId);
+        log.info("Requested extension for Loan with id: {}", loanId);
         return loanService.extendLoanByDefaultPeriod(loanId).map(l -> {
-            logger.info("Requested extension for Loan with id: {} approved", loanId);
+            log.info("Requested extension for Loan with id: {} approved", loanId);
             loanService.saveLoan(l);
             return ResponseEntity.ok("OK");
         }).orElseGet(() -> {
-            logger.info("Loan with id: {} not found", loanId);
+            log.info("Loan with id: {} not found", loanId);
             return ResponseEntity.notFound().build();
         });
     }
