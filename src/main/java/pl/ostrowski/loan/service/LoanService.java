@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.domain.Loan;
 import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.dto.mapper.LoanDtoMapper;
+import pl.ostrowski.loan.exception.LoanValidationException;
 import pl.ostrowski.loan.repository.LoanRepository;
+import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -22,11 +25,6 @@ public class LoanService {
         this.principalCalculatorService = principalCalculatorService;
     }
 
-    public Long saveLoan(Loan loan) {
-        Loan insertedLoan = loanRepository.save(loan);
-        return insertedLoan.getId();
-    }
-
     public void calculateDueAmountForLoan(LoanDto loan) {
         BigDecimal dueAmount = principalCalculatorService.calculatePrincipalForLoan(loan);
         loan.setPrincipal(principalCalculatorService.getPrincipalRate());
@@ -40,5 +38,13 @@ public class LoanService {
             l.setDueDate(l.getDueDate().plusDays(10));
         });
         return loan;
+    }
+
+    public LoanDto applyForLoan(LoanDto loan) throws LoanValidationException {
+        LoanValidator.validate(loan);
+        calculateDueAmountForLoan(loan);
+        Loan newLoan = LoanDtoMapper.fromLoanDto(loan);
+        newLoan = loanRepository.save(newLoan);
+        return LoanDtoMapper.fromLoan(newLoan);
     }
 }

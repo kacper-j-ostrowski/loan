@@ -1,5 +1,6 @@
 package pl.ostrowski.loan.domain;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 
 @Entity
 @Data
+@Builder
 public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

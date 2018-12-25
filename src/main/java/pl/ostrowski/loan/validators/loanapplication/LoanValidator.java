@@ -1,13 +1,12 @@
 package pl.ostrowski.loan.validators.loanapplication;
 
-import pl.ostrowski.loan.domain.Loan;
-
-import java.util.Optional;
+import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.exception.LoanValidationException;
 
 import static pl.ostrowski.loan.validators.loanapplication.LoanErrorMessages.*;
 
 public class LoanValidator {
-    public static Optional<String> validate(Loan loan) {
+    public static void validate(LoanDto loan) throws LoanValidationException {
 
         StringBuilder validationMessages = new StringBuilder();
 
@@ -23,6 +22,8 @@ public class LoanValidator {
                 .getValidationMessageIfInvalid(BETWEEN_MIDNIGHT_AND_SIX_AM_ON_MAX_AMOUNT  + "\n")
                 .orElse(""));
 
-        return validationMessages.length() == 0 ? Optional.empty() : Optional.of(validationMessages.toString());
+        if(validationMessages.length() > 0) {
+            throw new LoanValidationException(validationMessages.toString());
+        }
     }
 }

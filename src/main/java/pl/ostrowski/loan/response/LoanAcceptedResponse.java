@@ -2,21 +2,17 @@ package pl.ostrowski.loan.response;
 
 import lombok.Builder;
 import lombok.Getter;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import pl.ostrowski.loan.dto.LoanDto;
 
 @Getter
 @Builder
 public class LoanAcceptedResponse implements LoanResponse {
 
-    private Long loanId;
+    private LoanDto loan;
 
-    private LocalDate dueDate;
-
-    private BigDecimal dueAmount;
-
-    private BigDecimal principal;
+    public LoanAcceptedResponse(LoanDto loan) {
+        this.loan = loan;
+    }
 
     @Override
     public String getStatusOfLoan() {

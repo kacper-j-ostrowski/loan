@@ -6,16 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.exception.LoanValidationException;
+import pl.ostrowski.loan.response.LoanAcceptedResponse;
 import pl.ostrowski.loan.response.LoanExtendedResponse;
 import pl.ostrowski.loan.response.LoanResponse;
 import pl.ostrowski.loan.response.LoanRejectedResponse;
 import pl.ostrowski.loan.service.LoanService;
-import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
-import pl.ostrowski.loan.response.mapper.LoanToLoanResponseMapper;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 @Log4j2
 @Transactional
@@ -32,15 +31,15 @@ public class LoanController {
 
     @PostMapping("/loan")
     public ResponseEntity<LoanResponse> applyForLoan(@RequestBody @Valid @NotNull LoanDto loan) {
-//        Optional<String> validationResult = LoanValidator.validate(loan);
-//        if(validationResult.isPresent()) {
-//            log.info("Loan rejected because {}", validationResult.get());
-//            return ResponseEntity.ok(new LoanRejectedResponse(validationResult.get()));
-//        }
-//        loanService.calculateDueAmountForLoan(loan);
-//        Long loanId = loanService.saveLoan(loan);
-//        log.info("Loan accepted with new Id {}", loanId);
-        return ResponseEntity.ok(new LoanRejectedResponse(""));
+        log.info("Requested for new Loan: {}", loan);
+        try {
+            loan = loanService.applyForLoan(loan);
+        } catch (LoanValidationException e) {
+            log.info("New Loan rejected with reason: {}", e.getMessage());
+            return ResponseEntity.ok(new LoanRejectedResponse(e.getMessage()));
+        }
+        log.info("New Loan accepted: {}", loan);
+        return ResponseEntity.ok(new LoanAcceptedResponse(loan));
     }
 
 
@@ -49,7 +48,6 @@ public class LoanController {
         log.info("Requested extension for Loan with id: {}", loanId);
         return loanService.extendLoanByDefaultPeriod(loanId).map(l -> {
             log.info("Requested extension for Loan with id: {} approved", loanId);
-            loanService.saveLoan(l);
             return ResponseEntity.ok(new LoanExtendedResponse(l.getExtensionCounter(), l.getDueDate()));
         }).orElseGet(() -> {
             log.info("Loan with id: {} not found", loanId);
