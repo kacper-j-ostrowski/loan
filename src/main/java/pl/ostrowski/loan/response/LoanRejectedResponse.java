@@ -1,16 +1,16 @@
-package pl.ostrowski.loan.dto;
+package pl.ostrowski.loan.response;
 
-public class LoanRejectedResponseDto implements LoanResponseDto {
+public class LoanRejectedResponse implements LoanResponse {
 
     private String reasonOfRejection;
 
-    public LoanRejectedResponseDto(String reasonOfRejection) {
+    public LoanRejectedResponse(String reasonOfRejection) {
         this.reasonOfRejection = reasonOfRejection;
     }
 
     @Override
     public String getStatusOfLoan() {
-        return LoanResponseDto.REJECTED;
+        return LoanResponse.REJECTED;
     }
 
     public String getReasonOfRejection() {

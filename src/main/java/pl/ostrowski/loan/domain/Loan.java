@@ -8,7 +8,6 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @Entity

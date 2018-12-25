@@ -3,7 +3,7 @@ package pl.ostrowski.loan.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.domain.Loan;
-import pl.ostrowski.loan.domain.PrincipalCalculator;
+import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.repository.LoanRepository;
 
 import java.math.BigDecimal;
@@ -14,12 +14,12 @@ public class LoanService {
 
     private LoanRepository loanRepository;
 
-    private PrincipalCalculator principalCalculator;
+    private PrincipalCalculatorService principalCalculatorService;
 
     @Autowired
-    public LoanService(LoanRepository loanRepository, PrincipalCalculator principalCalculator) {
+    public LoanService(LoanRepository loanRepository, PrincipalCalculatorService principalCalculatorService) {
         this.loanRepository = loanRepository;
-        this.principalCalculator = principalCalculator;
+        this.principalCalculatorService = principalCalculatorService;
     }
 
     public Long saveLoan(Loan loan) {
@@ -27,16 +27,18 @@ public class LoanService {
         return insertedLoan.getId();
     }
 
-    public void calculateDueAmountForLoan(Loan loan) {
-        BigDecimal dueAmount = principalCalculator.calculatePrincipalForLoan(loan);
-        loan.setPrincipal(principalCalculator.getPrincipalRate());
+    public void calculateDueAmountForLoan(LoanDto loan) {
+        BigDecimal dueAmount = principalCalculatorService.calculatePrincipalForLoan(loan);
+        loan.setPrincipal(principalCalculatorService.getPrincipalRate());
         loan.setDueAmount(dueAmount);
     }
 
     public Optional<Loan> extendLoanByDefaultPeriod(Long loanId) {
         Optional<Loan> loan = loanRepository.findById(loanId);
-        loan.ifPresent(l -> l.setExtensionCounter(l.getExtensionCounter() + 1));
-        //loan.setDueDate(loan.getDueDate().toLocalDateTime().plusDays(10));
+        loan.ifPresent(l -> {
+            l.setExtensionCounter(l.getExtensionCounter() + 1);
+            l.setDueDate(l.getDueDate().plusDays(10));
+        });
         return loan;
     }
 }

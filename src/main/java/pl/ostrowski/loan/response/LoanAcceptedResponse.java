@@ -1,4 +1,4 @@
-package pl.ostrowski.loan.dto;
+package pl.ostrowski.loan.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class LoanAcceptedResponseDto implements LoanResponseDto {
+public class LoanAcceptedResponse implements LoanResponse {
 
     private Long loanId;
 
@@ -20,6 +20,6 @@ public class LoanAcceptedResponseDto implements LoanResponseDto {
 
     @Override
     public String getStatusOfLoan() {
-        return LoanResponseDto.ACCEPTED;
+        return LoanResponse.ACCEPTED;
     }
 }
