@@ -7,6 +7,7 @@ import pl.ostrowski.loan.domain.PrincipalCalculator;
 import pl.ostrowski.loan.repository.LoanRepository;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class LoanService {
@@ -30,5 +31,12 @@ public class LoanService {
         BigDecimal dueAmount = principalCalculator.calculatePrincipalForLoan(loan);
         loan.setPrincipal(principalCalculator.getPrincipalRate());
         loan.setDueAmount(dueAmount);
+    }
+
+    public Optional<Loan> extendLoanByDefaultPeriod(Long loanId) {
+        Optional<Loan> loan = loanRepository.findById(loanId);
+        loan.ifPresent(l -> l.setExtensionCounter(l.getExtensionCounter() + 1));
+        //loan.setDueDate(loan.getDueDate().toLocalDateTime().plusDays(10));
+        return loan;
     }
 }

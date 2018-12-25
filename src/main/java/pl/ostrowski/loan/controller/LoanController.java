@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.ostrowski.loan.domain.Loan;
 import pl.ostrowski.loan.dto.LoanResponseDto;
 import pl.ostrowski.loan.dto.LoanRejectedResponseDto;
@@ -18,6 +15,7 @@ import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
 
 import java.util.Optional;
 
+@Transactional
 @RestController
 public class LoanController {
 
@@ -31,7 +29,6 @@ public class LoanController {
     }
 
     @PostMapping("/loan")
-    @Transactional
     public ResponseEntity<LoanResponseDto> applyForLoan(@RequestBody Loan loan) {
         Optional<String> validationResult = LoanValidator.validate(loan);
         if(validationResult.isPresent()) {
@@ -45,11 +42,17 @@ public class LoanController {
     }
 
 
-    @PutMapping("/loan")
-    public String extendLoan(Long loanId) {
+    @PutMapping("/loan/{loanId}")
+    public ResponseEntity extendLoan(@PathVariable Long loanId) {
         logger.info("Requested extension for Loan with id: {}", loanId);
-
-        return "extended";
+        return loanService.extendLoanByDefaultPeriod(loanId).map(l -> {
+            logger.info("Requested extension for Loan with id: {} approved", loanId);
+            loanService.saveLoan(l);
+            return ResponseEntity.ok("OK");
+        }).orElseGet(() -> {
+            logger.info("Loan with id: {} not found", loanId);
+            return ResponseEntity.notFound().build();
+        });
     }
 
 }
