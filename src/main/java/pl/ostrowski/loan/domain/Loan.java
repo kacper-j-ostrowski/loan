@@ -9,6 +9,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -31,9 +32,13 @@ public class Loan {
 
     @Column
     @FutureOrPresent
-    private Timestamp startDate;
+    private LocalDate startDate;
 
     @Column
     @Future
-    private Timestamp dueDate;
+    private LocalDate dueDate;
+
+    @Column
+    @PositiveOrZero
+    private int extensionCounter;
 }
