@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.exception.LoanExtensionValidationException;
+import pl.ostrowski.loan.exception.LoanNotFound;
 import pl.ostrowski.loan.exception.LoanValidationException;
 import pl.ostrowski.loan.response.LoanAcceptedResponse;
 import pl.ostrowski.loan.response.LoanExtendedResponse;
@@ -46,13 +48,17 @@ public class LoanController {
     @PutMapping("/loan/{loanId}")
     public ResponseEntity extendLoan(@NotNull @PathVariable Long loanId) {
         log.info("Requested extension for Loan with id: {}", loanId);
-        return loanService.extendLoanByDefaultPeriod(loanId).map(l -> {
+        LoanDto loanDto;
+        try {
+            loanDto =loanService.extendLoanByDefaultPeriod(loanId);
             log.info("Requested extension for Loan with id: {} approved", loanId);
-            return ResponseEntity.ok(new LoanExtendedResponse(l.getExtensionCounter(), l.getDueDate()));
-        }).orElseGet(() -> {
+        } catch (LoanExtensionValidationException e) {
+            log.info("Loan with id: {} rejected because: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (LoanNotFound e) {
             log.info("Loan with id: {} not found", loanId);
-            return ResponseEntity.notFound().build();
-        });
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok().body(new LoanExtendedResponse(loanDto.getNumberOfExtensions(), loanDto.getDueDate()));
     }
-
 }

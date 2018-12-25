@@ -12,6 +12,7 @@ public class LoanDtoMapper {
                 .startDate(loan.getStartDate())
                 .dueDate(loan.getDueDate())
                 .principal(loan.getPrincipal())
+                .numberOfExtensions(loan.getExtensionCounter())
                 .id(loan.getId())
                 .build();
     }
@@ -24,6 +25,7 @@ public class LoanDtoMapper {
                 .dueDate(loanDto.getDueDate())
                 .id(loanDto.getId())
                 .principal(loanDto.getPrincipal())
+                .extensionCounter(loanDto.getNumberOfExtensions())
                 .build();
     }
 }

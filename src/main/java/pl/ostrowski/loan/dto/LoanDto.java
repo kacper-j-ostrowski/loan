@@ -36,4 +36,6 @@ public class LoanDto {
     private BigDecimal dueAmount;
 
     private BigDecimal principal;
+
+    private int numberOfExtensions;
 }

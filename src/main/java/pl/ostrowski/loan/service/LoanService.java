@@ -5,12 +5,14 @@ import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.domain.Loan;
 import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.dto.mapper.LoanDtoMapper;
+import pl.ostrowski.loan.exception.LoanExtensionValidationException;
+import pl.ostrowski.loan.exception.LoanNotFound;
 import pl.ostrowski.loan.exception.LoanValidationException;
 import pl.ostrowski.loan.repository.LoanRepository;
 import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
+import pl.ostrowski.loan.validators.loanextension.LoanExtensionValidator;
 
-import java.math.BigDecimal;
-import java.util.Optional;
+import static pl.ostrowski.loan.domain.LoanConstraints.EXTENSION_PERIOD_IN_DAYS;
 
 @Service
 public class LoanService {
@@ -25,18 +27,17 @@ public class LoanService {
         this.principalCalculatorService = principalCalculatorService;
     }
 
-    public void calculateDueAmountForLoan(LoanDto loan) {
-        BigDecimal dueAmount = principalCalculatorService.calculatePrincipalForLoan(loan);
-        loan.setPrincipal(principalCalculatorService.getPrincipalRate());
-        loan.setDueAmount(dueAmount);
-    }
+    public LoanDto extendLoanByDefaultPeriod(Long loanId) throws LoanExtensionValidationException, LoanNotFound {
+        LoanDto loan = loanRepository.findById(loanId)
+            .map(LoanDtoMapper::fromLoan)
+            .orElseThrow(() -> new LoanNotFound(loanId));
 
-    public Optional<Loan> extendLoanByDefaultPeriod(Long loanId) {
-        Optional<Loan> loan = loanRepository.findById(loanId);
-        loan.ifPresent(l -> {
-            l.setExtensionCounter(l.getExtensionCounter() + 1);
-            l.setDueDate(l.getDueDate().plusDays(10));
-        });
+        LoanExtensionValidator.validate(loan);
+
+        loan.setDueDate(loan.getDueDate().plusDays(EXTENSION_PERIOD_IN_DAYS));
+        loan.setNumberOfExtensions(loan.getNumberOfExtensions() + 1);
+        Loan extendedLoan = LoanDtoMapper.fromLoanDto(loan);
+        loanRepository.save(extendedLoan);
         return loan;
     }
 
@@ -46,5 +47,10 @@ public class LoanService {
         Loan newLoan = LoanDtoMapper.fromLoanDto(loan);
         newLoan = loanRepository.save(newLoan);
         return LoanDtoMapper.fromLoan(newLoan);
+    }
+
+    private void calculateDueAmountForLoan(LoanDto loan) {
+        loan.setPrincipal(principalCalculatorService.getPrincipalRate());
+        loan.setDueAmount(principalCalculatorService.calculatePrincipalForLoan(loan));
     }
 }

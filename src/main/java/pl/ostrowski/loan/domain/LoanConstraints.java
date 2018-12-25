@@ -12,5 +12,5 @@ public class LoanConstraints {
 
     public static final double PRINCIPAL = 0.1;
 
-    private static final int EXTENSION_PERIOD_IN_DAYS = 10;
+    public static final int EXTENSION_PERIOD_IN_DAYS = 10;
 }

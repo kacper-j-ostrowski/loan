@@ -1,7 +1,9 @@
 package pl.ostrowski.loan.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Future;
@@ -14,6 +16,8 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
