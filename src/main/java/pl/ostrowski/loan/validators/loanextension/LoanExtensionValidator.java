@@ -10,7 +10,7 @@ public class LoanExtensionValidator {
         StringBuilder validationMessages = new StringBuilder();
 
         validationMessages.append(ExtensionValidatonRules.isBeforeDueDate.test(loan)
-                .getValidationMessageIfInvalid("")
+                .getValidationMessageIfInvalid("Cannot extended loan after due date is passed.\n")
                 .orElse(""));
 
         if(validationMessages.length() > 0) {
