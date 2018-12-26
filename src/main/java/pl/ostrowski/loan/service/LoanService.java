@@ -12,8 +12,6 @@ import pl.ostrowski.loan.repository.LoanRepository;
 import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
 import pl.ostrowski.loan.validators.loanextension.LoanExtensionValidator;
 
-import static pl.ostrowski.loan.domain.LoanConstraints.EXTENSION_PERIOD_IN_DAYS;
-
 @Service
 public class LoanService {
 
@@ -21,10 +19,21 @@ public class LoanService {
 
     private PrincipalCalculatorService principalCalculatorService;
 
+    private LoanValidator loanValidator;
+
+    private SystemParametersService systemParametersService;
+
+    private LoanExtensionValidator loanExtensionValidator;
+
     @Autowired
-    public LoanService(LoanRepository loanRepository, PrincipalCalculatorService principalCalculatorService) {
+    public LoanService(LoanRepository loanRepository, PrincipalCalculatorService principalCalculatorService,
+                       LoanValidator loanValidator, SystemParametersService systemParametersService,
+                       LoanExtensionValidator loanExtensionValidator) {
         this.loanRepository = loanRepository;
         this.principalCalculatorService = principalCalculatorService;
+        this.loanValidator = loanValidator;
+        this.systemParametersService = systemParametersService;
+        this.loanExtensionValidator = loanExtensionValidator;
     }
 
     public LoanDto extendLoanByDefaultPeriod(Long loanId) throws LoanExtensionValidationException, LoanNotFound {
@@ -32,9 +41,9 @@ public class LoanService {
             .map(LoanDtoMapper::fromLoan)
             .orElseThrow(() -> new LoanNotFound(loanId));
 
-        LoanExtensionValidator.validate(loan);
+        loanExtensionValidator.validate(loan);
 
-        loan.setDueDate(loan.getDueDate().plusDays(EXTENSION_PERIOD_IN_DAYS));
+        loan.setDueDate(loan.getDueDate().plusDays(systemParametersService.getExtensionPeriodInDays()));
         loan.setNumberOfExtensions(loan.getNumberOfExtensions() + 1);
         Loan extendedLoan = LoanDtoMapper.fromLoanDto(loan);
         loanRepository.save(extendedLoan);
@@ -42,7 +51,7 @@ public class LoanService {
     }
 
     public LoanDto applyForLoan(LoanDto loan) throws LoanValidationException {
-        LoanValidator.validate(loan);
+        loanValidator.validate(loan);
         calculateDueAmountForLoan(loan);
         Loan newLoan = LoanDtoMapper.fromLoanDto(loan);
         newLoan = loanRepository.save(newLoan);

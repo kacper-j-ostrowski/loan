@@ -1,15 +1,21 @@
 package pl.ostrowski.loan.validators.loanextension;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
 
+@Component
 public class LoanExtensionValidator {
 
-    public static void validate(LoanDto loan) throws LoanExtensionValidationException {
+    @Autowired
+    private ExtensionValidatonRules extensionValidatonRules;
+
+    public void validate(LoanDto loan) throws LoanExtensionValidationException {
 
         StringBuilder validationMessages = new StringBuilder();
 
-        validationMessages.append(ExtensionValidatonRules.isBeforeDueDate.test(loan)
+        validationMessages.append(extensionValidatonRules.isBeforeDueDate.test(loan)
                 .getValidationMessageIfInvalid("Cannot extended loan after due date is passed.\n")
                 .orElse(""));
 

@@ -1,5 +1,7 @@
 package pl.ostrowski.loan.validators.loanapplication;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.validators.GenericValidation;
 import pl.ostrowski.loan.validators.Validation;
@@ -7,20 +9,26 @@ import pl.ostrowski.loan.validators.Validation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static pl.ostrowski.loan.domain.LoanConstraints.*;
+import pl.ostrowski.loan.service.SystemParametersService;
 
+@Component
 public class LoanValidationRules {
-    public static final Validation<LoanDto> withinAllowedAmountRange = GenericValidation.from(loan ->
-        loan.getAmount().compareTo(MIN_AMOUNT) >= 0 &&
-                loan.getAmount().compareTo(MAX_AMOUNT) <= 0
+
+    @Autowired
+    private SystemParametersService systemParametersService;
+
+    public final Validation<LoanDto> withinAllowedAmountRange = GenericValidation.from(loan ->
+        loan.getAmount().compareTo(systemParametersService.getMinAmount()) >= 0 &&
+                loan.getAmount().compareTo(systemParametersService.getMaxAmount()) <= 0
     );
 
-    public static final Validation<LoanDto> withinAllowedDatesRange = GenericValidation.from(loan ->
-        !loan.getStartDate().isBefore(LocalDate.now()) && !loan.getDueDate().isAfter(LocalDate.parse(MAX_DUE_DATE))
+    public final Validation<LoanDto> withinAllowedDatesRange = GenericValidation.from(loan ->
+        !loan.getStartDate().isBefore(LocalDate.now()) &&
+                !loan.getDueDate().isAfter(LocalDate.parse(systemParametersService.getMaxDueDate()))
     );
 
-    public static final Validation<LoanDto> notBetweenMidnightAndSixMorningWithMaximumAmount = GenericValidation.from(loan ->
-        !(loan.getAmount().compareTo(MAX_AMOUNT) == 0 &&
+    public final Validation<LoanDto> notBetweenMidnightAndSixMorningWithMaximumAmount = GenericValidation.from(loan ->
+        !(loan.getAmount().compareTo(systemParametersService.getMaxAmount()) == 0 &&
                 LocalTime.now().isAfter(LocalTime.MIDNIGHT) &&
                     LocalTime.now().isBefore(LocalTime.MIDNIGHT.plusHours(6)))
     );

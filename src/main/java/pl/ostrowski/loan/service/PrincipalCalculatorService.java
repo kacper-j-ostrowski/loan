@@ -1,20 +1,22 @@
 package pl.ostrowski.loan.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.dto.LoanDto;
 
 import java.math.BigDecimal;
 
-import static pl.ostrowski.loan.domain.LoanConstraints.PRINCIPAL;
-
 @Service
 public class PrincipalCalculatorService {
 
+    @Autowired
+    private SystemParametersService systemParametersService;
+
     public BigDecimal calculatePrincipalForLoan(LoanDto loan) {
-        return loan.getAmount().multiply(BigDecimal.ONE.add(BigDecimal.valueOf(PRINCIPAL)));
+        return loan.getAmount().multiply(BigDecimal.ONE.add(BigDecimal.valueOf(systemParametersService.getPrincipal())));
     }
 
     public BigDecimal getPrincipalRate() {
-        return BigDecimal.valueOf(PRINCIPAL);
+        return BigDecimal.valueOf(systemParametersService.getPrincipal());
     }
 }
