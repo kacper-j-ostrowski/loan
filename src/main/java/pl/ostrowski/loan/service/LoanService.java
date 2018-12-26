@@ -1,6 +1,5 @@
 package pl.ostrowski.loan.service;
 
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.domain.Loan;
