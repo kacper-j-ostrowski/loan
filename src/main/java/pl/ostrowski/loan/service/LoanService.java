@@ -1,5 +1,6 @@
 package pl.ostrowski.loan.service;
 
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.domain.Loan;
@@ -11,6 +12,8 @@ import pl.ostrowski.loan.exception.LoanValidationException;
 import pl.ostrowski.loan.repository.LoanRepository;
 import pl.ostrowski.loan.validators.loanapplication.LoanValidator;
 import pl.ostrowski.loan.validators.loanextension.LoanExtensionValidator;
+
+import java.time.LocalDate;
 
 @Service
 public class LoanService {
@@ -52,10 +55,16 @@ public class LoanService {
 
     public LoanDto applyForLoan(LoanDto loan) throws LoanValidationException {
         loanValidator.validate(loan);
+        calculateDatesForLoan(loan);
         calculateDueAmountForLoan(loan);
         Loan newLoan = LoanDtoMapper.fromLoanDto(loan);
         newLoan = loanRepository.save(newLoan);
         return LoanDtoMapper.fromLoan(newLoan);
+    }
+
+    private void calculateDatesForLoan(LoanDto loan) {
+        loan.setStartDate(LocalDate.now());
+        loan.setDueDate(LocalDate.now().plusDays(loan.getDaysToRepayment()));
     }
 
     private void calculateDueAmountForLoan(LoanDto loan) {

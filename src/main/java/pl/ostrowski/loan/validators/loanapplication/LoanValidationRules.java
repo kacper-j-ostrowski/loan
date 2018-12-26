@@ -23,8 +23,8 @@ public class LoanValidationRules {
     );
 
     public final Validation<LoanDto> withinAllowedDatesRange = GenericValidation.from(loan ->
-        !loan.getStartDate().isBefore(LocalDate.now()) &&
-                !loan.getDueDate().isAfter(LocalDate.parse(systemParametersService.getMaxDueDate()))
+        !LocalDate.now().plusDays(loan.getDaysToRepayment())
+                .isAfter(LocalDate.parse(systemParametersService.getMaxDueDate()))
     );
 
     public final Validation<LoanDto> notBetweenMidnightAndSixMorningWithMaximumAmount = GenericValidation.from(loan ->
