@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
 import pl.ostrowski.loan.exception.LoanNotFound;
@@ -35,12 +34,6 @@ public class LoanControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
-    @Autowired
-    protected WebApplicationContext wac;
-
-    @Autowired
-    private LoanController loanController;
 
     @MockBean
     private LoanService loanService;
