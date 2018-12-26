@@ -40,3 +40,9 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 }
+
+sonarqube {
+	properties {
+		property "sonar.exclusions", "**/*LoanDto.java,**/*Loan.java"
+	}
+}
