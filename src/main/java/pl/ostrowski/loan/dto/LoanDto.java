@@ -1,6 +1,7 @@
 package pl.ostrowski.loan.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -38,4 +40,7 @@ public class LoanDto {
     private BigDecimal principal;
 
     private int numberOfExtensions;
+
+    @JsonIgnore
+    private LocalTime timeOfRequest = LocalTime.now();
 }

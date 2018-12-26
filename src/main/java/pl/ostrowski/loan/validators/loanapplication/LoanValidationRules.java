@@ -29,7 +29,7 @@ public class LoanValidationRules {
 
     public final Validation<LoanDto> notBetweenMidnightAndSixMorningWithMaximumAmount = GenericValidation.from(loan ->
         !(loan.getAmount().compareTo(systemParametersService.getMaxAmount()) == 0 &&
-                LocalTime.now().isAfter(LocalTime.MIDNIGHT) &&
-                    LocalTime.now().isBefore(LocalTime.MIDNIGHT.plusHours(6)))
+                loan.getTimeOfRequest().isAfter(LocalTime.MIDNIGHT) &&
+                    loan.getTimeOfRequest().isBefore(LocalTime.MIDNIGHT.plusHours(6)))
     );
 }
