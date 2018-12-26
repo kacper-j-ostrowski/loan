@@ -79,7 +79,7 @@ public class LoanValidationRulesTest {
     public void test_withinAllowedDatesRange_Valid() {
         LoanDto testDto = LoanDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
-                .startDate(LocalDate.now())
+                .daysToRepayment(50)
                 .dueDate(LocalDate.parse("2022-12-12"))
                 .build();
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
@@ -90,8 +90,8 @@ public class LoanValidationRulesTest {
     public void test_withinAllowedDatesRange_InValid() {
         LoanDto testDto = LoanDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
-                .startDate(LocalDate.now())
-                .dueDate(LocalDate.parse("2200-12-12"))
+                .daysToRepayment(360_000)
+                .dueDate(LocalDate.parse("2110-12-12"))
                 .build();
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
         assertFalse(valid);
@@ -102,7 +102,7 @@ public class LoanValidationRulesTest {
     public void test_withinAllowedDatesRange_ValidEdgeCase() {
         LoanDto testDto = LoanDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
-                .startDate(LocalDate.now())
+                .daysToRepayment(50)
                 .dueDate(LocalDate.parse("2100-12-12"))
                 .build();
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
