@@ -19,7 +19,7 @@ public class LoanServiceImpl implements LoanService {
 
     private LoanRepository loanRepository;
 
-    private PrincipalCalculatorServiceImpl principalCalculatorServiceImpl;
+    private PrincipalCalculatorService principalCalculatorService;
 
     private LoanValidator loanValidator;
 
@@ -28,11 +28,11 @@ public class LoanServiceImpl implements LoanService {
     private LoanExtensionValidator loanExtensionValidator;
 
     @Autowired
-    public LoanServiceImpl(LoanRepository loanRepository, PrincipalCalculatorServiceImpl principalCalculatorServiceImpl,
+    public LoanServiceImpl(LoanRepository loanRepository, PrincipalCalculatorServiceImpl principalCalculatorService,
                            LoanValidator loanValidator, SystemParametersService systemParametersService,
                            LoanExtensionValidator loanExtensionValidator) {
         this.loanRepository = loanRepository;
-        this.principalCalculatorServiceImpl = principalCalculatorServiceImpl;
+        this.principalCalculatorService = principalCalculatorService;
         this.loanValidator = loanValidator;
         this.systemParametersService = systemParametersService;
         this.loanExtensionValidator = loanExtensionValidator;
@@ -67,7 +67,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     private void calculateDueAmountForLoan(LoanDto loan) {
-        loan.setPrincipal(principalCalculatorServiceImpl.getPrincipalRate());
-        loan.setDueAmount(principalCalculatorServiceImpl.calculatePrincipalForLoan(loan));
+        loan.setPrincipal(principalCalculatorService.getPrincipalRate());
+        loan.setDueAmount(principalCalculatorService.calculatePrincipalForLoan(loan));
     }
 }
