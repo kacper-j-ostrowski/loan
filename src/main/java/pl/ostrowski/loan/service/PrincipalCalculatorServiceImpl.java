@@ -13,7 +13,10 @@ public class PrincipalCalculatorServiceImpl implements PrincipalCalculatorServic
     private SystemParametersService systemParametersService;
 
     public BigDecimal calculatePrincipalForLoan(LoanDto loan) {
-        return loan.getAmount().multiply(BigDecimal.ONE.add(BigDecimal.valueOf(systemParametersService.getPrincipal())));
+        return loan.getAmount()
+                .multiply(BigDecimal.ONE
+                        .add(BigDecimal.valueOf(systemParametersService.getPrincipal())))
+                            .setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     public BigDecimal getPrincipalRate() {
