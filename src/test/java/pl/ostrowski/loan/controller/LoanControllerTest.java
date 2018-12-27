@@ -13,7 +13,7 @@ import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
 import pl.ostrowski.loan.exception.LoanNotFound;
 import pl.ostrowski.loan.exception.LoanValidationException;
-import pl.ostrowski.loan.service.LoanService;
+import pl.ostrowski.loan.service.LoanServiceImpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,21 +22,21 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class LoanControllerTest {
 
+    public static final String LOAN_APPLICATION_REQUEST = "{\"amount\": \"5000\",\"daysToRepayment\": \"60\"}";
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
-    private LoanService loanService;
+    private LoanServiceImpl loanServiceImpl;
 
     @Test
     public void test_postLoan_simpleCase() throws Exception {
@@ -44,28 +44,34 @@ public class LoanControllerTest {
         LoanDto dto = LoanDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .dueAmount(BigDecimal.valueOf(7_700))
+                .id(1L)
                 .build();
-        when(loanService.applyForLoan(any(LoanDto.class))).thenReturn(dto);
+        when(loanServiceImpl.applyForLoan(any(LoanDto.class))).thenReturn(dto);
 
         //when
         mockMvc.perform(post("/api/v1/loan")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"amount\": \"7000\",\"daysToRepayment\": \"60\"}"))
                 //then
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.statusOfLoan", is("Accepted")))
+                .andExpect(jsonPath("$.loan.amount", is(7000)))
+                .andExpect(jsonPath("$.loan.dueAmount", is(7700)))
+                .andExpect(jsonPath("$.loan.id", is(1)));
     }
 
     @Test
     public void test_postLoan_rejected() throws Exception {
         //given
-        when(loanService.applyForLoan(any(LoanDto.class))).thenThrow(LoanValidationException.class);
+        when(loanServiceImpl.applyForLoan(any(LoanDto.class))).thenThrow(LoanValidationException.class);
 
         //when
         mockMvc.perform(post("/api/v1/loan")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"amount\": \"11000\",\"daysToRepayment\": \"60\"}"))
                 //then
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.statusOfLoan", is("Rejected")));
     }
 
     @Test
@@ -78,25 +84,26 @@ public class LoanControllerTest {
                 .dueDate(LocalDate.now().plusDays(60))
                 .build();
 
-        when(loanService.extendLoanByDefaultPeriod(any(Long.class))).thenReturn(dto);
+        when(loanServiceImpl.extendLoanByDefaultPeriod(any(Long.class))).thenReturn(dto);
 
         //when
         mockMvc.perform(put("/api/v1/loan/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"amount\": \"5000\",\"daysToRepayment\": \"60\"}"))
+                .content(LOAN_APPLICATION_REQUEST))
                 //then
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.statusOfLoan", is("Extended")))
+                .andExpect(jsonPath("$.numberOfExtensions", is(1)));
     }
 
     @Test
     public void test_extendLoan_loanNotFound() throws Exception {
         //given
-        when(loanService.extendLoanByDefaultPeriod(any(Long.class))).thenThrow(LoanNotFound.class);
+        when(loanServiceImpl.extendLoanByDefaultPeriod(any(Long.class))).thenThrow(LoanNotFound.class);
 
         //when
         mockMvc.perform(put("/api/v1/loan/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"amount\": \"5000\",\"daysToRepayment\": \"60\"}"))
+                .contentType(MediaType.APPLICATION_JSON))
                 //then
                 .andExpect(status().isBadRequest());
     }
@@ -104,12 +111,11 @@ public class LoanControllerTest {
     @Test
     public void test_extendLoan_loanExtensionRejected() throws Exception {
         //given
-        when(loanService.extendLoanByDefaultPeriod(any(Long.class))).thenThrow(LoanExtensionValidationException.class);
+        when(loanServiceImpl.extendLoanByDefaultPeriod(any(Long.class))).thenThrow(LoanExtensionValidationException.class);
 
         //when
         mockMvc.perform(put("/api/v1/loan/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"amount\": \"5000\",\"daysToRepayment\": \"60\"}"))
+                .contentType(MediaType.APPLICATION_JSON))
                 //then
                 .andExpect(status().isBadRequest());
     }

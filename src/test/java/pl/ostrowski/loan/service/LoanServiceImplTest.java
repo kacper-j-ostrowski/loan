@@ -25,16 +25,16 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class LoanServiceTest {
+public class LoanServiceImplTest {
 
     @Autowired
-    private LoanService loanService;
+    private LoanServiceImpl loanServiceImpl;
 
     @MockBean
     private LoanRepository loanRepository;
 
     @MockBean
-    private PrincipalCalculatorService principalCalculatorService;
+    private PrincipalCalculatorServiceImpl principalCalculatorServiceImpl;
 
     @Autowired
     private SystemParametersService systemParametersService;
@@ -63,7 +63,7 @@ public class LoanServiceTest {
         when(loanRepository.save(any(Loan.class))).thenReturn(loanToReturn);
 
         //when
-        LoanDto createdLoanDto = loanService.applyForLoan(testDto);
+        LoanDto createdLoanDto = loanServiceImpl.applyForLoan(testDto);
 
         //then
         assertEquals(0, createdLoanDto.getDueAmount().compareTo(BigDecimal.valueOf(7_700)));
@@ -81,7 +81,7 @@ public class LoanServiceTest {
                 .build();
 
         //when
-        loanService.applyForLoan(testDto);
+        loanServiceImpl.applyForLoan(testDto);
     }
 
     @Test(expected = LoanValidationException.class)
@@ -93,12 +93,12 @@ public class LoanServiceTest {
                 .build();
 
         //when
-        loanService.applyForLoan(testDto);
+        loanServiceImpl.applyForLoan(testDto);
     }
 
     @Test(expected = LoanNotFound.class)
     public void test_extendLoanByDefaultPeriod_notFoundException() throws LoanNotFound, LoanExtensionValidationException {
-        loanService.extendLoanByDefaultPeriod(1L);
+        loanServiceImpl.extendLoanByDefaultPeriod(1L);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class LoanServiceTest {
         when(loanRepository.findById(any(Long.class))).thenReturn(Optional.of(loanToReturn));
 
         //when
-        LoanDto returnedDto = loanService.extendLoanByDefaultPeriod(1L);
+        LoanDto returnedDto = loanServiceImpl.extendLoanByDefaultPeriod(1L);
 
         //then
         assertEquals(loanToReturn.getDueDate().plusDays(10), returnedDto.getDueDate());
@@ -135,6 +135,6 @@ public class LoanServiceTest {
         when(loanRepository.findById(any(Long.class))).thenReturn(Optional.of(loanToReturn));
 
         //when
-        loanService.extendLoanByDefaultPeriod(1L);
+        loanServiceImpl.extendLoanByDefaultPeriod(1L);
     }
 }
