@@ -50,7 +50,7 @@ public class LoanController {
         log.info("Requested extension for Loan with id: {}", loanId);
         LoanDto loanDto;
         try {
-            loanDto =loanService.extendLoanByDefaultPeriod(loanId);
+            loanDto = loanService.extendLoanByDefaultPeriod(loanId);
             log.info("Requested extension for Loan with id: {} approved", loanId);
         } catch (LoanExtensionValidationException e) {
             log.info("Loan with id: {} rejected because: {}", e.getMessage());
