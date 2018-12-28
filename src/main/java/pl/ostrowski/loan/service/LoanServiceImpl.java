@@ -2,7 +2,6 @@ package pl.ostrowski.loan.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import pl.ostrowski.loan.domain.Loan;
 import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.dto.mapper.LoanDtoMapper;
@@ -16,7 +15,6 @@ import pl.ostrowski.loan.validators.loanextension.LoanExtensionValidator;
 import java.time.LocalDate;
 
 @Service
-@Transactional
 public class LoanServiceImpl implements LoanService {
 
     private LoanRepository loanRepository;
