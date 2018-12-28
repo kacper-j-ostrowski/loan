@@ -3,7 +3,6 @@ package pl.ostrowski.loan.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.ostrowski.loan.dto.LoanDto;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
@@ -19,7 +18,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Log4j2
-@Transactional
 @RestController
 @RequestMapping("/api/v1")
 public class LoanController {
