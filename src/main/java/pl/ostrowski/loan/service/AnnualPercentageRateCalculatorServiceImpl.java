@@ -8,6 +8,9 @@ public class AnnualPercentageRateCalculatorServiceImpl implements AnnualPercenta
 
     @Override
     public BigDecimal calculate(LoanDto loan) {
-        return null;
+         double apr = 100 * (Math.pow((loan.getDueAmount().divide(loan.getAmount())).doubleValue(),
+                 365/loan.getDaysToRepayment().doubleValue()) - 1);
+
+        return BigDecimal.valueOf(apr).setScale(1,BigDecimal.ROUND_HALF_UP);
     }
 }

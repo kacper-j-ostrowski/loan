@@ -16,7 +16,7 @@ public class AnnualPercentageRateCalculatorServiceImplTest {
 
         LoanDto loan = LoanDto.builder()
                 .amount(BigDecimal.valueOf(500))
-                .amount(BigDecimal.valueOf(510))
+                .dueAmount(BigDecimal.valueOf(510))
                 .daysToRepayment(25)
                 .build();
 
