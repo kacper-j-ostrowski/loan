@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public interface PrincipalCalculatorService {
 
-    public BigDecimal calculatePrincipalForLoan(LoanDto loan);
+    BigDecimal calculatePrincipalForLoan(LoanDto loan);
 
-    public BigDecimal getPrincipalRate();
+    BigDecimal getPrincipalRate();
 }
