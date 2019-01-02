@@ -15,11 +15,11 @@ public class ExceptionHandlerImpl {
 
     @RequestMapping(produces = "application/json")
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<?> handleExceptions(Throwable ex) {
+    public ResponseEntity handleExceptions(Throwable ex) {
         UUID exceptionUUID = UUID.randomUUID();
         log.error( "Error occured with message: {}. Error unique id: {}", ex.getMessage(), exceptionUUID);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ex.getMessage());
+                .body(ex.getMessage() + " Error unique id: " + exceptionUUID);
     }
 }
