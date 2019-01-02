@@ -1,5 +1,6 @@
 package pl.ostrowski.loan.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,9 @@ public class LoanRequestDto {
     @NotNull
     private BigDecimal amount;
 
+    @JsonIgnore
     private LocalDate startDate = LocalDate.now();
 
+    @JsonIgnore
     private LocalTime timeOfRequest = LocalTime.now();
 }
