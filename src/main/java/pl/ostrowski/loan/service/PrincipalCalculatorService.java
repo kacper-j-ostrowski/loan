@@ -1,12 +1,12 @@
 package pl.ostrowski.loan.service;
 
-import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.domain.Loan;
 
 import java.math.BigDecimal;
 
 public interface PrincipalCalculatorService {
 
-    BigDecimal calculatePrincipalForLoan(LoanDto loan);
+    BigDecimal calculatePrincipalForLoan(Loan loan);
 
     BigDecimal getPrincipalRate();
 }

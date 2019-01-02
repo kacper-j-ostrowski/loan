@@ -1,9 +1,6 @@
 package pl.ostrowski.loan.dto;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,25 +15,15 @@ import java.time.LocalTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanDto {
-
-    private Long id;
-
+public class LoanRequestDto {
     @NotNull
     private Integer daysToRepayment;
-
-    private LocalDate startDate;
-
-    private LocalDate dueDate;
 
     @NotNull
     private BigDecimal amount;
 
-    private BigDecimal dueAmount;
+    private LocalDate startDate = LocalDate.now();
 
-    private BigDecimal principal;
-
-    private int numberOfExtensions;
+    private LocalTime timeOfRequest = LocalTime.now();
 }

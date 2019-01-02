@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.dto.LoanRequestDto;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
 import pl.ostrowski.loan.exception.LoanNotFound;
 import pl.ostrowski.loan.exception.LoanValidationException;
@@ -46,7 +47,7 @@ public class LoanControllerTest {
                 .dueAmount(BigDecimal.valueOf(7_700))
                 .id(1L)
                 .build();
-        when(loanServiceImpl.applyForLoan(any(LoanDto.class))).thenReturn(dto);
+        when(loanServiceImpl.applyForLoan(any(LoanRequestDto.class))).thenReturn(dto);
 
         //when
         mockMvc.perform(post("/api/v1/loan")
@@ -63,7 +64,7 @@ public class LoanControllerTest {
     @Test
     public void test_postLoan_rejected() throws Exception {
         //given
-        when(loanServiceImpl.applyForLoan(any(LoanDto.class))).thenThrow(LoanValidationException.class);
+        when(loanServiceImpl.applyForLoan(any(LoanRequestDto.class))).thenThrow(LoanValidationException.class);
 
         //when
         mockMvc.perform(post("/api/v1/loan")

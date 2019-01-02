@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ostrowski.loan.domain.Loan;
 import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.dto.LoanRequestDto;
 import pl.ostrowski.loan.dto.mapper.LoanDtoMapper;
+import pl.ostrowski.loan.dto.mapper.LoanRequestDtoMapper;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
 import pl.ostrowski.loan.exception.LoanNotFound;
 import pl.ostrowski.loan.exception.LoanValidationException;
@@ -52,21 +54,21 @@ public class LoanServiceImpl implements LoanService {
         return loan;
     }
 
-    public LoanDto applyForLoan(LoanDto loan) throws LoanValidationException {
-        loanValidator.validate(loan);
-        calculateDatesForLoan(loan);
+    public LoanDto applyForLoan(LoanRequestDto loanRequestDto) throws LoanValidationException {
+        loanValidator.validate(loanRequestDto);
+        Loan loan = LoanRequestDtoMapper.fromRequestDto(loanRequestDto);
+        calculateDatesForLoan(loan, loanRequestDto.getDaysToRepayment());
         calculateDueAmountForLoan(loan);
-        Loan newLoan = LoanDtoMapper.fromLoanDto(loan);
-        newLoan = loanRepository.save(newLoan);
-        return LoanDtoMapper.fromLoan(newLoan);
+        loan = loanRepository.save(loan);
+        return LoanDtoMapper.fromLoan(loan);
     }
 
-    private void calculateDatesForLoan(LoanDto loan) {
+    private void calculateDatesForLoan(Loan loan, int daysToRepayment) {
         loan.setStartDate(LocalDate.now());
-        loan.setDueDate(LocalDate.now().plusDays(loan.getDaysToRepayment()));
+        loan.setDueDate(LocalDate.now().plusDays(daysToRepayment));
     }
 
-    private void calculateDueAmountForLoan(LoanDto loan) {
+    private void calculateDueAmountForLoan(Loan loan) {
         loan.setPrincipal(principalCalculatorService.getPrincipalRate());
         loan.setDueAmount(principalCalculatorService.calculatePrincipalForLoan(loan));
     }

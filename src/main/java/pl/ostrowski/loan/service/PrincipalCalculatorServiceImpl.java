@@ -2,7 +2,7 @@ package pl.ostrowski.loan.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.domain.Loan;
 
 import java.math.BigDecimal;
 
@@ -12,7 +12,7 @@ public class PrincipalCalculatorServiceImpl implements PrincipalCalculatorServic
     @Autowired
     private SystemParametersService systemParametersService;
 
-    public BigDecimal calculatePrincipalForLoan(LoanDto loan) {
+    public BigDecimal calculatePrincipalForLoan(Loan loan) {
         return loan.getAmount()
                 .multiply(BigDecimal.ONE
                         .add(BigDecimal.valueOf(systemParametersService.getPrincipal())))

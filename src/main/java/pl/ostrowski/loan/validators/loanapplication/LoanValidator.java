@@ -2,7 +2,7 @@ package pl.ostrowski.loan.validators.loanapplication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.dto.LoanRequestDto;
 import pl.ostrowski.loan.exception.LoanValidationException;
 
 import static pl.ostrowski.loan.validators.loanapplication.LoanErrorMessages.*;
@@ -13,7 +13,7 @@ public class LoanValidator {
     @Autowired
     private LoanValidationRules loanValidationRules;
 
-    public void validate(LoanDto loan) throws LoanValidationException {
+    public void validate(LoanRequestDto loan) throws LoanValidationException {
 
         StringBuilder validationMessages = new StringBuilder();
 

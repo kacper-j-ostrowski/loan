@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import pl.ostrowski.loan.dto.LoanDto;
+import pl.ostrowski.loan.dto.LoanRequestDto;
 import pl.ostrowski.loan.service.SystemParametersService;
 import pl.ostrowski.loan.validators.loanapplication.LoanValidationRules;
 
@@ -37,7 +37,7 @@ public class LoanValidationRulesTest {
 
     @Test
     public void test_withinAllowedAmountRange_Valid() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .build();
 
@@ -48,7 +48,7 @@ public class LoanValidationRulesTest {
 
     @Test
     public void test_withinAllowedAmountRange_InValid() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_001))
                 .build();
 
@@ -59,14 +59,14 @@ public class LoanValidationRulesTest {
 
     @Test
     public void test_withinAllowedAmountRange_ValidEdgeCases() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(500))
                 .build();
 
         boolean valid = loanValidationRules.withinAllowedAmountRange.test(testDto).isValid();
         assertTrue(valid);
 
-        testDto = LoanDto.builder()
+        testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .build();
 
@@ -77,20 +77,22 @@ public class LoanValidationRulesTest {
 
     @Test
     public void test_withinAllowedDatesRange_Valid() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .daysToRepayment(50)
                 .build();
+
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
         assertTrue(valid);
     }
 
     @Test
     public void test_withinAllowedDatesRange_InValid() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .daysToRepayment(360_000)
                 .build();
+
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
         assertFalse(valid);
     }
@@ -98,10 +100,11 @@ public class LoanValidationRulesTest {
 
     @Test
     public void test_withinAllowedDatesRange_ValidEdgeCase() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .daysToRepayment(50)
                 .build();
+
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
         assertTrue(valid);
     }
@@ -109,75 +112,80 @@ public class LoanValidationRulesTest {
 
     @Test
     public void test_notBetweenMidnightAndSixMorningWithMaximumAmount_Valid() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .timeOfRequest(LocalTime.of(12,0))
                 .build();
+
         boolean valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertTrue(valid);
     }
 
     @Test
     public void test_notBetweenMidnightAndSixMorningWithMaximumAmount_Invalid() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .timeOfRequest(LocalTime.of(3,0))
                 .build();
+
         boolean valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertFalse(valid);
     }
 
     @Test
     public void test_notBetweenMidnightAndSixMorningWithMaximumAmount_InvalidEdgeCases() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .timeOfRequest(LocalTime.MIDNIGHT.plusMinutes(1))
                 .build();
+
         boolean valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertFalse(valid);
 
-        testDto = LoanDto.builder()
+        testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .timeOfRequest(LocalTime.MIDNIGHT.plusHours(6).minusMinutes(1))
                 .build();
+
         valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertFalse(valid);
     }
 
     @Test
     public void test_notBetweenMidnightAndSixMorningWithMaximumAmount_ValidEdgeCases() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .timeOfRequest(LocalTime.MIDNIGHT.minusMinutes(1))
                 .build();
+
         boolean valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertTrue(valid);
 
-        testDto = LoanDto.builder()
+        testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(10_000))
                 .startDate(LocalDate.now())
-                .dueDate(LocalDate.parse("2020-12-12"))
                 .timeOfRequest(LocalTime.MIDNIGHT.plusHours(6))
                 .build();
+
         valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertTrue(valid);
     }
 
     @Test
     public void test_notBetweenMidnightAndSixMorningWithMaximumAmount_ValidEdgeCases_WithAmountLessThanMax() {
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .timeOfRequest(LocalTime.MIDNIGHT.plusMinutes(1))
                 .build();
         boolean valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertTrue(valid);
 
-        testDto = LoanDto.builder()
+        testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
                 .startDate(LocalDate.now())
-                .dueDate(LocalDate.parse("2020-12-12"))
                 .timeOfRequest(LocalTime.MIDNIGHT.plusHours(6).minusMinutes(1))
                 .build();
+
         valid = loanValidationRules.notBetweenMidnightAndSixMorningWithMaximumAmount.test(testDto).isValid();
         assertTrue(valid);
     }

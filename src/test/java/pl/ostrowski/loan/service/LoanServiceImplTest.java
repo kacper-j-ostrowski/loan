@@ -9,7 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.ostrowski.loan.domain.Loan;
 import pl.ostrowski.loan.dto.LoanDto;
-import pl.ostrowski.loan.dto.mapper.LoanDtoMapper;
+import pl.ostrowski.loan.dto.LoanRequestDto;
+import pl.ostrowski.loan.dto.mapper.LoanRequestDtoMapper;
 import pl.ostrowski.loan.exception.LoanExtensionValidationException;
 import pl.ostrowski.loan.exception.LoanNotFound;
 import pl.ostrowski.loan.exception.LoanValidationException;
@@ -48,12 +49,12 @@ public class LoanServiceImplTest {
     @Test
     public void test_applyForLoan_simpleCase() throws LoanValidationException {
         //given
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                             .amount(BigDecimal.valueOf(7_000))
                             .daysToRepayment(30)
                             .build();
 
-        Loan loanToReturn = LoanDtoMapper.fromLoanDto(testDto);
+        Loan loanToReturn = LoanRequestDtoMapper.fromRequestDto(testDto);
         loanToReturn.setPrincipal(BigDecimal.valueOf(0.1));
         loanToReturn.setDueAmount(BigDecimal.valueOf(7_700));
         loanToReturn.setStartDate(LocalDate.now());
@@ -75,7 +76,7 @@ public class LoanServiceImplTest {
     @Test(expected = LoanValidationException.class)
     public void test_applyForLoan_rejectAmount() throws LoanValidationException {
         //given
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(100_000))
                 .daysToRepayment(30)
                 .build();
@@ -87,7 +88,7 @@ public class LoanServiceImplTest {
     @Test(expected = LoanValidationException.class)
     public void test_applyForLoan_rejectDate() throws LoanValidationException {
         //given
-        LoanDto testDto = LoanDto.builder()
+        LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(501))
                 .daysToRepayment(366_000)
                 .build();
