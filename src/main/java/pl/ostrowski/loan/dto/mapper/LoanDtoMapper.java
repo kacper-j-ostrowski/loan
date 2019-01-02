@@ -5,6 +5,8 @@ import pl.ostrowski.loan.dto.LoanDto;
 
 public class LoanDtoMapper {
 
+    private LoanDtoMapper() {}
+
     public static LoanDto fromLoan(Loan loan) {
         return LoanDto.builder()
                 .amount(loan.getAmount())

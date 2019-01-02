@@ -18,6 +18,6 @@ public class LoanExtendedResponse implements LoanResponse {
 
     @Override
     public String getStatusOfLoan() {
-        return EXTENDED;
+        return LoanResponseCodes.EXTENDED;
     }
 }

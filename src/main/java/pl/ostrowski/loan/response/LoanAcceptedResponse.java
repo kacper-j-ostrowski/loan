@@ -16,6 +16,6 @@ public class LoanAcceptedResponse implements LoanResponse {
 
     @Override
     public String getStatusOfLoan() {
-        return LoanResponse.ACCEPTED;
+        return LoanResponseCodes.ACCEPTED;
     }
 }

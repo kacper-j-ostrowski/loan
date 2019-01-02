@@ -10,7 +10,7 @@ public class LoanRejectedResponse implements LoanResponse {
 
     @Override
     public String getStatusOfLoan() {
-        return LoanResponse.REJECTED;
+        return LoanResponseCodes.REJECTED;
     }
 
     public String getReasonOfRejection() {

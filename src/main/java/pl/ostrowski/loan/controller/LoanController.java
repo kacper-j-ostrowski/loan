@@ -20,7 +20,7 @@ import pl.ostrowski.loan.service.LoanService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@Api(description = "Loan controller")
+@Api("Loan controller")
 @Log4j2
 @RestController
 @RequestMapping("/api/v1")
