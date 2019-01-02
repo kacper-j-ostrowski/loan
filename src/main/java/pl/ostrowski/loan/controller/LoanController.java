@@ -1,5 +1,7 @@
 package pl.ostrowski.loan.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import pl.ostrowski.loan.service.LoanService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+@Api(description = "Loan controller")
 @Log4j2
 @RestController
 @RequestMapping("/api/v1")
@@ -30,6 +33,7 @@ public class LoanController {
         this.loanService = loanService;
     }
 
+    @ApiOperation(value = "This will create loan if input parameters will be valid")
     @PostMapping("/loan")
     public ResponseEntity<LoanResponse> applyForLoan(@RequestBody @Valid @NotNull LoanRequestDto loanRequestDto) {
         log.info("Requested for new Loan: {}", loanRequestDto);
@@ -44,7 +48,7 @@ public class LoanController {
         return ResponseEntity.ok(new LoanAcceptedResponse(loanDto));
     }
 
-
+    @ApiOperation(value = "This will extend loan if request will be send during loan duration")
     @PutMapping("/loan/{loanId}")
     public ResponseEntity extendLoan(@NotNull @PathVariable Long loanId) {
         log.info("Requested extension for Loan with id: {}", loanId);
