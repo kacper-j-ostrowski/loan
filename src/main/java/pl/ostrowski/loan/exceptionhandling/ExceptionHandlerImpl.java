@@ -17,7 +17,8 @@ public class ExceptionHandlerImpl {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity handleExceptions(Throwable ex) {
         UUID exceptionUUID = UUID.randomUUID();
-        log.error( "Error occured with message: {}. Error unique id: {}", ex.getMessage(), exceptionUUID);
+        log.error( "Error occured with message: {} and stack: {}. " +
+                "Error unique id: {}", ex.getMessage(), ex.getStackTrace(), exceptionUUID);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ex.getMessage() + " Error unique id: " + exceptionUUID);
