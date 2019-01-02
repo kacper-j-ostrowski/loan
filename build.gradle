@@ -46,6 +46,6 @@ dependencies {
 
 sonarqube {
 	properties {
-		property "sonar.exclusions", "**/*LoanDto.java,**/*Loan.java, **/*LoanRequestDto.java"
+		property "sonar.exclusions", "**/*LoanDto.java,**/*Loan.java, **/*LoanRequestDto.java, **/*SwaggerConfig.java"
 	}
 }
