@@ -44,7 +44,7 @@ public class LoanController {
             log.info("New Loan rejected with reason: {}", e.getMessage());
             return ResponseEntity.ok(new LoanRejectedResponse(e.getMessage()));
         }
-        log.info("New Loan accepted: {}", loanRequestDto);
+        log.info("New Loan accepted: {}", loanDto);
         return ResponseEntity.ok(new LoanAcceptedResponse(loanDto));
     }
 
@@ -57,7 +57,7 @@ public class LoanController {
             loanDto = loanService.extendLoanByDefaultPeriod(loanId);
             log.info("Requested extension for Loan with id: {} approved", loanId);
         } catch (LoanExtensionValidationException e) {
-            log.info("Loan with id: {} rejected because: {}", e.getMessage());
+            log.info("Loan with id: {} rejected because: {}", loanId, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (LoanNotFound e) {
             log.info("Loan with id: {} not found", loanId);
