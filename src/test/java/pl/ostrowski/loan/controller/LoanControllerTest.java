@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
@@ -39,6 +39,18 @@ public class LoanControllerTest {
     @MockBean
     private LoanServiceImpl loanServiceImpl;
 
+
+    private String requestLoanOnAmounAndWithRepaymentDays(int amount, int days) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"amount\":");
+        sb.append("\"" + amount + "\"");
+        sb.append(",");
+        sb.append("\"daysToRepayment\": ");
+        sb.append("\"" + days + "\"");
+        sb.append("}");
+        return sb.toString();
+    }
+
     @Test
     public void test_postLoan_simpleCase() throws Exception {
         //given
@@ -52,13 +64,15 @@ public class LoanControllerTest {
         //when
         mockMvc.perform(post("/api/v1/loan")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"amount\": \"7000\",\"daysToRepayment\": \"60\"}"))
+                    .content(requestLoanOnAmounAndWithRepaymentDays(7000, 60)))
                 //then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusOfLoan", is("Accepted")))
                 .andExpect(jsonPath("$.loan.amount", is(7000)))
                 .andExpect(jsonPath("$.loan.dueAmount", is(7700)))
                 .andExpect(jsonPath("$.loan.id", is(1)));
+
+        verify(loanServiceImpl, times(1)).applyForLoan(any(LoanRequestDto.class));
     }
 
     @Test
@@ -69,7 +83,7 @@ public class LoanControllerTest {
         //when
         mockMvc.perform(post("/api/v1/loan")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"amount\": \"11000\",\"daysToRepayment\": \"60\"}"))
+                .content(requestLoanOnAmounAndWithRepaymentDays(11000, 60)))
                 //then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusOfLoan", is("Rejected")));
