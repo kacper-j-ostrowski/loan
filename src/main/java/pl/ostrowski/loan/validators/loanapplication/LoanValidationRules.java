@@ -14,8 +14,12 @@ import pl.ostrowski.loan.service.SystemParametersService;
 @Component
 public class LoanValidationRules {
 
-    @Autowired
     private SystemParametersService systemParametersService;
+
+    @Autowired
+    public LoanValidationRules(SystemParametersService systemParametersService) {
+        this.systemParametersService = systemParametersService;
+    }
 
     public final Validation<LoanRequestDto> withinAllowedAmountRange = GenericValidation.from(loan ->
         loan.getAmount().compareTo(systemParametersService.getMinAmount()) >= 0 &&
