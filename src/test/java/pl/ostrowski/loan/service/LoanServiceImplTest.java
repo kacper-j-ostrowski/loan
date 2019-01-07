@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -92,13 +92,7 @@ public class LoanServiceImplTest {
     @Test
     public void test_extendLoanByDefaultPeriod_simpleCase() throws LoanNotFound, LoanExtensionValidationException {
         //given
-        Loan loanToReturn = new Loan();
-        loanToReturn.setAmount(BigDecimal.valueOf(7_000));
-        loanToReturn.setPrincipal(BigDecimal.valueOf(0.1));
-        loanToReturn.setDueAmount(BigDecimal.valueOf(7_700));
-        loanToReturn.setStartDate(LocalDate.now());
-        loanToReturn.setDueDate(LocalDate.now().plusDays(30));
-        loanToReturn.setId(1L);
+        Loan loanToReturn = createValidLoan(LocalDate.now(), LocalDate.now().plusDays(30));
 
         when(loanRepository.findById(any(Long.class))).thenReturn(Optional.of(loanToReturn));
 
@@ -112,17 +106,22 @@ public class LoanServiceImplTest {
     @Test(expected = LoanExtensionValidationException.class)
     public void test_extendLoanByDefaultPeriod_afterLoanDueDate() throws LoanNotFound, LoanExtensionValidationException {
         //given
-        Loan loanToReturn = new Loan();
-        loanToReturn.setAmount(BigDecimal.valueOf(7_000));
-        loanToReturn.setPrincipal(BigDecimal.valueOf(0.1));
-        loanToReturn.setDueAmount(BigDecimal.valueOf(7_700));
-        loanToReturn.setStartDate(LocalDate.now().minusDays(30));
-        loanToReturn.setDueDate(LocalDate.now().minusDays(10));
-        loanToReturn.setId(1L);
+        Loan loanToReturn = createValidLoan(LocalDate.now().minusDays(30), LocalDate.now().minusDays(10));
 
         when(loanRepository.findById(any(Long.class))).thenReturn(Optional.of(loanToReturn));
 
         //when
         loanServiceImpl.extendLoanByDefaultPeriod(1L);
+    }
+
+    private Loan createValidLoan(LocalDate startDate, LocalDate dueDate) {
+        Loan loanToReturn = new Loan();
+        loanToReturn.setAmount(BigDecimal.valueOf(7_000));
+        loanToReturn.setPrincipal(BigDecimal.valueOf(0.1));
+        loanToReturn.setDueAmount(BigDecimal.valueOf(7_700));
+        loanToReturn.setStartDate(startDate);
+        loanToReturn.setDueDate(dueDate);
+        loanToReturn.setId(1L);
+        return loanToReturn;
     }
 }
