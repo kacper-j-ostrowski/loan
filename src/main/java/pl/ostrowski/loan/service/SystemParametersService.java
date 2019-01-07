@@ -19,34 +19,35 @@ public class SystemParametersService {
     private static final String PRINCIPAL = "principal";
     private static final String EXTENSION_DAYS = "extension_days";
 
+    private static final String MISSING_REQUIRED_PARAMETERS = "Missing required parameters";
 
     public BigDecimal getMinAmount() {
         return systemParamsRepository.findById(MIN_AMOUNT)
                 .map(sp -> BigDecimal.valueOf(Integer.valueOf(sp.getParamValue())))
-                .orElse(BigDecimal.ZERO);
+                .orElseThrow(() -> new RuntimeException(MISSING_REQUIRED_PARAMETERS));
     }
 
     public BigDecimal getMaxAmount() {
         return systemParamsRepository.findById(MAX_AMOUNT)
                 .map(sp -> BigDecimal.valueOf(Integer.valueOf(sp.getParamValue())))
-                .orElse(BigDecimal.ZERO);
+                .orElseThrow(() -> new RuntimeException(MISSING_REQUIRED_PARAMETERS));
     }
 
     public String getMaxDueDate() {
         return systemParamsRepository.findById(MAX_DUE_DATE)
                 .map(SystemParameter::getParamValue)
-                .orElse("9999-12-12");
+                .orElseThrow(() -> new RuntimeException(MISSING_REQUIRED_PARAMETERS));
     }
 
     public double getPrincipal() {
         return systemParamsRepository.findById(PRINCIPAL)
                 .map(sp -> Double.parseDouble(sp.getParamValue()))
-                .orElse(0.0);
+                .orElseThrow(() -> new RuntimeException(MISSING_REQUIRED_PARAMETERS));
     }
 
     public int getExtensionPeriodInDays() {
         return systemParamsRepository.findById(EXTENSION_DAYS)
                 .map(sp -> Integer.parseInt(sp.getParamValue()))
-                .orElse(0);
+                .orElseThrow(() -> new RuntimeException(MISSING_REQUIRED_PARAMETERS));
     }
 }
