@@ -31,7 +31,7 @@ public class LoanValidationRulesTest {
     public void setConstraints() {
         systemParametersService.setMinAmount(BigDecimal.valueOf(500));
         systemParametersService.setMaxAmount(BigDecimal.valueOf(10_000));
-        systemParametersService.setMaxDueDate("2100-12-12");
+        systemParametersService.setMaxDueDate(LocalDate.now().plusYears(80).toString());
     }
 
 
@@ -90,7 +90,7 @@ public class LoanValidationRulesTest {
     public void test_withinAllowedDatesRange_InValid() {
         LoanRequestDto testDto = LoanRequestDto.builder()
                 .amount(BigDecimal.valueOf(7_000))
-                .daysToRepayment(360_000)
+                .daysToRepayment(366_000)
                 .build();
 
         boolean valid = loanValidationRules.withinAllowedDatesRange.test(testDto).isValid();
