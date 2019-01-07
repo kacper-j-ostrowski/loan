@@ -2,10 +2,6 @@ package pl.ostrowski.loan.validators;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import pl.ostrowski.loan.dto.LoanRequestDto;
 import pl.ostrowski.loan.service.SystemParametersService;
 import pl.ostrowski.loan.validators.loanapplication.LoanValidationRules;
@@ -16,22 +12,24 @@ import java.time.LocalTime;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class LoanValidationRulesTest {
 
-    @Autowired
     private LoanValidationRules loanValidationRules;
 
-    @Autowired
     private SystemParametersService systemParametersService;
 
     @Before
     public void setConstraints() {
-        systemParametersService.setMinAmount(BigDecimal.valueOf(500));
-        systemParametersService.setMaxAmount(BigDecimal.valueOf(10_000));
-        systemParametersService.setMaxDueDate(LocalDate.now().plusYears(80).toString());
+        systemParametersService = mock(SystemParametersService.class);
+
+        when(systemParametersService.getMinAmount()).thenReturn(BigDecimal.valueOf(500));
+        when(systemParametersService.getMaxAmount()).thenReturn(BigDecimal.valueOf(10_000));
+        when(systemParametersService.getMaxDueDate()).thenReturn(LocalDate.now().plusYears(80).toString());
+
+        loanValidationRules = new LoanValidationRules(systemParametersService);
     }
 
 
