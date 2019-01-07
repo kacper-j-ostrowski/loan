@@ -1,6 +1,5 @@
 package pl.ostrowski.loan.service;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +32,6 @@ public class LoanServiceImplTest {
 
     @MockBean
     private LoanRepository loanRepository;
-
-    @MockBean
-    private PrincipalCalculatorServiceImpl principalCalculatorServiceImpl;
-
-    @Autowired
-    private SystemParametersService systemParametersService;
-
-
-    @Before
-    public void setupParameters() {
-        systemParametersService.setMaxDueDate("2100-12-31");
-    }
 
     @Test
     public void test_applyForLoan_simpleCase() throws LoanValidationException {
